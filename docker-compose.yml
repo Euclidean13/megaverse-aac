@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  redis:
+    image: 'redis:latest' # Using the latest Redis image
+    container_name: redis
+    ports:
+      - '6379:6379' # Expose Redis to the host on port 6379
+    networks:
+      - megaverse-network
+
+  megaverse:
+    image: 'megaverse-aac:0.0.1' # Local image
+    container_name: megaverse
+    ports:
+      - '3030:3030' # Map container port 3030 to host port 3030
+    environment:
+      BASE_ROUTE: 'https://challenge.crossmint.io' # Replace with your actual base route
+      CANDIDATE_ID: '0b79459c-880e-4de9-af89-0bebfd3638c5' # Replace with your actual candidate ID
+      REDIS_HOST: 'redis' # The host for Redis within the Docker network
+      REDIS_PORT: '6379'  # The port for Redis within the Docker network
+    depends_on:
+      - redis # Ensure Redis is started before megaverse
+    networks:
+      - megaverse-network
+
+networks:
+  megaverse-network:
+    driver: bridge # Use bridge networking
